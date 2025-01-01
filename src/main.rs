@@ -93,7 +93,7 @@ fn update_bird(
         }
 
         bird.velocity -= time.delta_secs() * GRAVITY;
-        transform.translation += bird.velocity * time.delta_secs();
+        transform.translation.y += bird.velocity * time.delta_secs();
 
         transform.rotation = Quat::from_axis_angle(
             Vec3::Z,
@@ -102,13 +102,13 @@ fn update_bird(
 
         let mut dead = false;
 
-        if transform.translation.y < game_manager.window_dimentions.y / 2. {
+        if transform.translation.y < -game_manager.window_dimentions.y / 2. {
             dead = true;
         } else {
             for (_entity, pipe_transform) in obstacle_query.iter() {
                 if (pipe_transform.translation.y - transform.translation.y).abs()
                     < OBSTACLE_HEIGHT * PIXEL_RATIO / 2.
-                    || (pipe_transform.translation.x - transform.translation.x).abs()
+                    && (pipe_transform.translation.x - transform.translation.x).abs()
                         < OBSTACLE_WIDTH * PIXEL_RATIO / 2.
                 {
                     dead = true;
@@ -168,7 +168,7 @@ fn spawn_obstacles(
 ) {
     for i in 0..OBSTACLE_AMOUNT {
         let y_offset = generate_offset(rand);
-        let x_pos = window_width / 2. * PIXEL_RATIO * i as f32;
+        let x_pos = (window_width / 2.) * PIXEL_RATIO * i as f32;
         spawn_obstacle(
             Vec3::X * x_pos + Vec3::Y * (get_centered_pipe_position() + y_offset),
             1.,
